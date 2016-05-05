@@ -1,8 +1,12 @@
-// SpecCSV.cpp : Defines the entry point for the console application.
-//
+/**
+ * SpecCSV
+ * SpecCSV.cpp
+ *
+ * command-line CSV editor and inspector
+ * @author Humam O.
+ */
 
 #include "stdafx.h"
-#include "stdafx.cpp"
 
 #include <boost\algorithm\string\trim_all.hpp>
 
@@ -45,8 +49,8 @@ void calcSum();
 
 
 // global
-Frame csvfile;
-Observation meta;
+Frame csvfile;      // CSV file
+Observation meta;   // meta info
 string_vec args;    // command args
 
 int main(int argc, char** argv)
@@ -62,14 +66,7 @@ int main(int argc, char** argv)
 
 	if (filename == "debug")
 	{
-		Observation t{ ",damnit,<empty>" };
-		t.alter(1, "");
-		std::cout << t.getRaw() << std::endl;
-
-		for (int i = 0; i < t.getNumValues(); i++)
-			std::cout << t[i] << std::endl;
-
-		std::cin >> filename;
+		// TODO
 	}
 	else
 	{
@@ -205,22 +202,27 @@ int main(int argc, char** argv)
 					break;
 				}
 			}
+
 			catch (const ArgumentException& err)
 			{
 				std::cout << args[0] << ", " << err.what() << std::endl;
 			}
+
 			catch (const BehaviourException& err)
 			{
 				std::cout << args[0] <<  ", " << err.what() << std::endl;
 			}
+
 			catch (const DeprecatedException& err)
 			{
 				std::cout << err.what() << std::endl;
 			}
+
 			catch (const NotImplementedException& err)
 			{
 				std::cout << err.what() << std::endl;
 			}
+
 			catch (std::exception)
 			{
 				std::cout << "unhandled exception" << std::endl;
@@ -315,9 +317,9 @@ string_vec parseCmd(std::string command)
 	std::string temp = "";
 	bool space_flag = false;
 
-	// we need to split string with token ' ' (1 or more spaces)\
-	   if the parser detect \' char we are going to treat every\
-	   space inside as part of the arg, till the next \' (multiple words args)
+	// we need to split string with token ' ' (1 or more spaces)
+	// if the parser detect \' char we are going to treat every
+	// space inside as part of the arg, till the next \' (multiple words args)
 	for (; it != command.end(); it++)
 	{
 		if (*it == '\'')

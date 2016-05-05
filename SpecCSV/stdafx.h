@@ -22,4 +22,8 @@
 #define NEG -1
 #define PADDING 2
 
+typedef std::vector<std::string> string_vec;
+
 // TODO: reference additional headers your program requires here
+
+#include "base.h"
