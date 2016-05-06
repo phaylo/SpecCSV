@@ -2,58 +2,20 @@
  * SpecCSV
  * SpecCSV.cpp
  *
- * command-line CSV editor and inspector
+ * Command-line CSV editor and inspector
  * @author Humam O.
  */
 
 #include "stdafx.h"
 
-#include <boost\algorithm\string\trim_all.hpp>
-
 using namespace boost::algorithm;
-
-// prototypes
-
-// misc
-int hashCmd(const std::string& command);
-string_vec parseCmd(std::string command);
-
-std::string getValidFileName();
-
-void displayUsage();
-void openFile();
-
-// display info
-inline void showMeta();
-inline void showInfo();
-void showDetailed();
-
-// edit file
-void append();
-void appInline();
-void appDetailed();
-
-void deleteLine();
-
-void edit();
-void editInline();
-void editDetailed();
-void editField();
-
-void insert();
-void insertInline();
-void insertDetailed();
-
-// data analysis
-void calcSum();
-
 
 // global
 Frame csvfile;      // CSV file
 Observation meta;   // meta info
 string_vec args;    // command args
 
-int main(int argc, char** argv)
+int main(void)
 {
 
 	/* initialize the program */
@@ -66,7 +28,8 @@ int main(int argc, char** argv)
 
 	if (filename == "debug")
 	{
-		// TODO
+		// for lol
+		std::cout << "Delete System32 then try again...\n";
 	}
 	else
 	{
@@ -82,7 +45,6 @@ int main(int argc, char** argv)
 
 		// 3. handling differint commands
 		std::string _cmd;   // for storing the string command
-		std::string fname;  // for storing the file name for 'open' command
 		int cmd;            // for hashing the command as integer
 		
 		do
@@ -235,7 +197,6 @@ int main(int argc, char** argv)
 	quit:
 		std::cout << "\nQuitting..";
 
-
 	return 0;
 }
 
@@ -356,7 +317,7 @@ std::string getValidFileName()
 	{
 		std::cout << "\nFile name: ";
 		std::getline(std::cin, result);
-	} while (!std::tr2::sys::exists(result));
+	} while (!std::tr2::sys::exists(result) && result != "debug");
 
 	return result;
 }

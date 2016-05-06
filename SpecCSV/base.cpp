@@ -2,6 +2,7 @@
  * SpecCSV
  * base.cpp
  *
+ * Declaration of Observation and Frame class members. also for the helper function translate
  * @author Humam O.
  */
 

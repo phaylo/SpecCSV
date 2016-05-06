@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 /SpecCSV/trans.csv
 /SpecCSV/money.csv
+/SpecCSV/csv

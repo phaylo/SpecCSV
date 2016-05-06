@@ -26,4 +26,7 @@ typedef std::vector<std::string> string_vec;
 
 // TODO: reference additional headers your program requires here
 
+#include "usrexp.h"
 #include "base.h"
+#include "func.h"
+#include <boost/algorithm/string/trim_all.hpp>

@@ -2,6 +2,7 @@
  * SpecCSV
  * base.h
  *
+ * Observation and Frame class, and the helper function translate 
  * @author Humam O.
  */
 
@@ -9,11 +10,12 @@
 
 #include "stdafx.h"
 
-// prototype
+/* prototypes */
 
 /**
  * Return a string with a removed chars from it
  *
+ * @param source the original string
  * @param rem the char to be removed
  * @return string with each occurrence of rem removed
  */
@@ -23,33 +25,7 @@ std::string translate(std::string source, char rem);
 // ============
 
 
-/*** user-defined exceptions ***/
-
-class NotImplementedException : public std::logic_error
-{
-public:
-	NotImplementedException(std::string msg = "not implemented") : logic_error(msg) {}
-};
-class DeprecatedException : public std::logic_error
-{
-public:
-	DeprecatedException(std::string msg = "deprecated, please avoid using") : logic_error(msg) {}
-};
-class BehaviourException : public std::runtime_error
-{
-public:
-	BehaviourException(std::string msg) : runtime_error(msg) {}
-};
-class ArgumentException : public std::runtime_error
-{
-public:
-	ArgumentException(std::string msg) : runtime_error(msg) {}
-};
-
-// ============
-
-
-// Observation class
+/* Observation class */
 class Observation
 {
 public:
@@ -136,7 +112,11 @@ private:
 	string_vec  _Vals;     // string vector of fields
 };
 
-// Frame class
+
+// ============
+
+
+/* Frame class */
 class Frame
 {
 public:
