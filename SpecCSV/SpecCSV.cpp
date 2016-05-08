@@ -21,8 +21,9 @@ int main(void)
 	/* initialize the program */
 
 	// 1. input file name
-	std::string filename;
-	std::cout << "Please input the appropriate filename\n";
+	name:
+		std::string filename;
+		std::cout << "Please input the appropriate filename\n";
 
 	filename = getValidFileName();
 
@@ -35,10 +36,27 @@ int main(void)
 	{
 		/* open the appropriate file */
 
-		csvfile.open(filename);
-		meta = csvfile.getMeta();
+		try
+		{
+			csvfile.open(filename);
+			meta = csvfile.getMeta();
+		}
+		catch(const ParseException& err)
+		{
+			std::cout << err.what() << std::endl;
+			goto name;
+		}
 
 		/* program usage and actions */
+
+		// a note about files concerns line breaks
+		std::cout << "\nDepending on where you run this program...\nAppending or deleting the last observation ";
+		std::cout << "might result in multiple line endings which can prevent other programs including SpecCSV ";
+		std::cout << "to handle the file correctly\n";
+
+		std::cout << "\nWe recommend using any other edit feature of SpecCSV to convert all line endings to ";
+		std::cout << "one type.\nIf you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
+		std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n";
 
 		// 2. display usage
 		displayUsage();
@@ -79,8 +97,11 @@ int main(void)
 
 					// -------------
 
-				case 2:  /* reserved */
-					throw NotImplementedException();
+				case 2:  // total
+					if (args.size() != 1)
+						throw ArgumentException("usage: total");
+
+					std::cout << "total observation: " << csvfile.getLinesNum() << std::endl;
 					break;
 
 					// -------------
@@ -132,8 +153,8 @@ int main(void)
 
 					// -------------
 
-				case 10:  /* reserved */
-					throw NotImplementedException();
+				case 10:  // linebreak
+					displayLineEnd();
 					break;
 
 					// -------------
@@ -144,7 +165,7 @@ int main(void)
 
 					// -------------
 
-				case 12:  /* reserved */
+				case 12:  // editfield
 					editField();
 					break;
 
@@ -152,6 +173,24 @@ int main(void)
 
 				case 13:  // insert
 					insert();
+					break;
+
+					// -------------
+
+				case 14:  // mean
+					calcMean();
+					break;
+
+					// -------------
+
+				case 15:  // min
+					calcMin();
+					break;
+
+					// -------------
+
+				case 16:  // max
+					calcMax();
 					break;
 
 					// -------------
@@ -185,6 +224,13 @@ int main(void)
 				std::cout << err.what() << std::endl;
 			}
 
+			catch (const ParseException& err)
+			{
+				std::cout << "fatal error: " << err.what() << std::endl;
+				std::cout << "please specify another file: " << std::endl;
+				goto name;
+			}
+
 			catch (std::exception)
 			{
 				std::cout << "unhandled exception" << std::endl;
@@ -210,7 +256,7 @@ int hashCmd(const std::string& command)
 	{
 		return 1;
 	}
-	else if (false && command == "detailed")
+	else if (command == "total")
 	{
 		return 2;
 	}
@@ -242,7 +288,7 @@ int hashCmd(const std::string& command)
 	{
 		return 9;
 	}
-	else if (false && command == "delete")
+	else if (command == "linebreak")
 	{
 		return 10;
 	}
@@ -257,6 +303,18 @@ int hashCmd(const std::string& command)
 	else if (command == "insert")
 	{
 		return 13;
+	}
+	else if (command == "mean")
+	{
+		return 14;
+	}
+	else if (command == "min")
+	{
+		return 15;
+	}
+	else if (command == "max")
+	{
+		return 16;
 	}
 	else if (command == "help")
 	{
@@ -293,7 +351,7 @@ string_vec parseCmd(std::string command)
 		{
 			temp += *it;
 		}
-		else if (*it == ' ' && temp != "" || it == command.end() - 1 && temp != "")
+		else if (*it == ' ' && temp != "")
 		{
 			result.push_back(temp);
 			temp = "";
@@ -334,11 +392,15 @@ void displayUsage()
 	std::cout << "'edit mode linenumber' to edit an observation\n";
 	std::cout << "'delete linenumber' to delete an observation\n\n";
 
+	std::cout << "'total' to display the total number of observations\n";
 	std::cout << "'showmeta' to display the meta info of the current file\n";
 	std::cout << "'showinfo' to display the info of the current file\n";
 	std::cout << "'showdetailed linenumber' to display detailed info for a specific line\n\n";
 
-	std::cout << "'sum field' to display total of a value\n\n";
+	std::cout << "'sum field' to display total of a field\n";
+	std::cout << "'mean field' to display mean of a field\n";
+	std::cout << "'min field' to display min of a field\n";
+	std::cout << "'max field' to display max of a field\n\n";
 
 	std::cout << "'refresh' to refresh all the info about the current file (deprecated)\n";
 	std::cout << "'open' to close this file and open a new one\n\n";
@@ -347,6 +409,7 @@ void displayUsage()
 
 	std::cout << "mode can be either \"inline\" or \"detailed\"\n";
 	std::cout << "linenumber can be \"last\", an alias for the last observation available\n\n";
+
 	std::cout << "if an argument is consist of more than one word, enclose it with single quote character\n";
 	std::cout << "e.g: sum 'Days Spent'\n\n";
 }
@@ -362,6 +425,13 @@ void openFile()
 
 	csvfile.refresh(filename);
 	meta = csvfile.getMeta();
+}
+void displayLineEnd()
+{
+	if (args.size() != 1)
+		throw ArgumentException("usage: linebreak");
+
+	std::cout << csvfile.getLineBreakDetailed() << std::endl;
 }
 
 
@@ -381,7 +451,10 @@ inline void showInfo()
 	if (args.size() != 1)
 		throw ArgumentException("usage: showinfo");
 
-	for (int i = 0, len = csvfile.getLinesNum(); i < len; i++)
+	// don't display everything if there's many observations
+	int i = csvfile.getLinesNum() > SHOWLIMIT ? csvfile.getLinesNum() - SHOWLASTNUM : 0;
+
+	for (int len = csvfile.getLinesNum(); i < len; i++)
 		std::cout << "[" << i + 1 << "] " << csvfile.getInfo()[i].getRaw() << std::endl;
 }
 void showDetailed()
@@ -743,7 +816,7 @@ void calcSum()
 	if (args.size() != 2)
 		throw ArgumentException("usage: sum fieldname");
 
-	int sum = 0;
+	double sum = 0;
 	int val = meta.find(args[1]);
 		
 	if (val == NEG)
@@ -753,7 +826,7 @@ void calcSum()
 	{
 		try
 		{
-			sum += std::stoi(csvfile.getInfo()[i][val]);
+			sum += std::stof(csvfile.getInfo()[i][val]);
 		}
 		catch (std::invalid_argument)
 		{
@@ -763,4 +836,98 @@ void calcSum()
 
 	std::cout << args[1] << " total is: ";
 	std::cout << sum << std::endl;
+}
+void calcMean()
+{
+	if (args.size() != 2)
+		throw ArgumentException("usage: mean fieldname");
+
+	double sum = 0;
+	int val = meta.find(args[1]);
+
+	if (val == NEG)
+		throw BehaviourException("field doesn't exist");
+
+	for (int i = 0, len = csvfile.getLinesNum(); i < len; i++)
+	{
+		try
+		{
+			sum += std::stof(csvfile.getInfo()[i][val]);
+		}
+		catch (std::invalid_argument)
+		{
+			throw BehaviourException("one or more field is not a number");
+		}
+	}
+
+	std::cout << args[1] << " mean is: ";
+	std::cout << sum / csvfile.getLinesNum() << std::endl;
+}
+void calcMin()
+{
+	if (args.size() != 2)
+		throw ArgumentException("usage: min fieldname");
+
+	double min = 0;
+	int val = meta.find(args[1]);
+
+	if (val == NEG)
+		throw BehaviourException("field doesn't exist");
+
+	for (int i = 0, len = csvfile.getLinesNum(); i < len; i++)
+	{
+		try
+		{
+			double temp = std::stof(csvfile.getInfo()[i][val]);
+			
+			if (i == 0)
+			{
+				min = temp;
+				continue;
+			}
+
+			min = min < temp ? min : temp;
+		}
+		catch (std::invalid_argument)
+		{
+			throw BehaviourException("one or more field is not a number");
+		}
+	}
+
+	std::cout << args[1] << " min is: ";
+	std::cout << min << std::endl;
+}
+void calcMax()
+{
+	if (args.size() != 2)
+		throw ArgumentException("usage: min fieldname");
+
+	double max = 0;
+	int val = meta.find(args[1]);
+
+	if (val == NEG)
+		throw BehaviourException("field doesn't exist");
+
+	for (int i = 0, len = csvfile.getLinesNum(); i < len; i++)
+	{
+		try
+		{
+			double temp = std::stof(csvfile.getInfo()[i][val]);
+
+			if (i == 0)
+			{
+				max = temp;
+				continue;
+			}
+
+			max = max > temp ? max : temp;
+		}
+		catch (std::invalid_argument)
+		{
+			throw BehaviourException("one or more field is not a number");
+		}
+	}
+
+	std::cout << args[1] << " max is: ";
+	std::cout << max << std::endl;
 }

@@ -231,6 +231,7 @@ Frame::Frame(std::string filename)
 	// open the file for reading and writing, and set the out pointer at the end of file 
 	_CSV.open(filename, std::ios::in | std::ios::out | std::ios::app);
 	_Fname = filename;              // save the filename for using with other members
+	_Break = _Linebreak();          // the line break
 
 	_Totallines = _Linenum();       // calculate number of observations (meta adds)
 	_Lines = _Totallines - 1;       // calculate number of observations
@@ -245,23 +246,31 @@ Frame::~Frame()
 }
 
 // accessors
-Observation  Frame::getMeta()          const
+Observation  Frame::getMeta()             const
 {
 	return _Meta;
 }
-Observation* Frame::getInfo()          const
+Observation* Frame::getInfo()             const
 {
 	return _Info;
 }
-unsigned     Frame::getTotalLinesNum() const
+unsigned     Frame::getTotalLinesNum()    const
 {
 	return _Totallines;
 }
-unsigned     Frame::getLinesNum()      const
+unsigned     Frame::getLinesNum()         const
 {
 	return _Lines;
 }
-bool         Frame::fileGood()         const
+char         Frame::getLineBreak()        const
+{
+	return _Break;
+}
+std::string Frame::getLineBreakDetailed() const
+{
+	return _Breakstring;
+}
+bool         Frame::fileGood()            const
 {
 	if (_CSV.good())
 		return true;
@@ -286,6 +295,7 @@ void Frame::refresh(const std::string& fname)
 	_CSV.close();
 	_CSV.open(fname, std::ios::in | std::ios::out | std::ios::app);
 	_Fname = fname;
+	_Break = _Linebreak();
 
 	_Totallines = _Linenum();
 	_Lines = _Totallines - 1;
@@ -297,6 +307,7 @@ void Frame::open(const std::string& fname)
 {
 	_CSV.open(fname, std::ios::in | std::ios::out | std::ios::app);
 	_Fname = fname;
+	_Break = _Linebreak();
 
 	_Totallines = _Linenum();
 	_Lines = _Totallines - 1;
@@ -413,9 +424,7 @@ unsigned        Frame::_Linenum()
 	unsigned    result = 0;
 	std::string temp;
 
-	std::streamoff pos = _CSV.tellg();
-
-	while (getline(_CSV, temp))
+	while (getline(_CSV, temp, _Break))
 	{
 		result++;
 	}
@@ -431,7 +440,8 @@ unsigned        Frame::_Linenum()
 Observation     Frame::_Initmeta()
 {
 	std::string temp;
-	std::getline(_CSV, temp);
+
+	std::getline(_CSV, temp, _Break);
 
 	return Observation(temp);
 }
@@ -443,7 +453,7 @@ Observation*    Frame::_Initinfo()
 	int          iter = 0;
 	std::string  temp;
 
-	while (getline(_CSV, temp))
+	while (getline(_CSV, temp, _Break))
 	{
 		result[iter] = Observation(temp);
 		iter++;
@@ -456,9 +466,57 @@ Observation*    Frame::_Initinfo()
 	return result;
 }
 
+// the appropriate line break
+char            Frame::_Linebreak()
+{
+	int countCR = 0;
+	int countLF = 0;
+	char buff;
+
+	_CSV.close();
+	_CSV.open(_Fname, std::ios::in | std::ios::binary);
+
+	while (_CSV.read(&buff, 1))
+	{
+		if (buff == '\r')
+			countCR++;
+		else if (buff == '\n')
+			countLF++;
+	}
+
+	_CSV.close();
+	_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
+
+	// all line breaks are CRLF (windows)
+	if (countCR == countLF)
+	{
+		_Breakstring = "CRLF, Windows";
+		return '\n';
+	}
+
+	// or all line breaks are LF (unix)
+	else if (countCR == 0 && countLF != 0)
+	{
+		_Breakstring = "LF, Unix";
+		return '\n';
+	}
+
+	// all line breaks ar CR (Mac old)
+	else if (countLF == 0 && countCR != 0)
+	{
+		_Breakstring = "CR, Mac (old)";
+		return '\r';
+	}
+
+	// mixed
+	else
+	{
+		throw ParseException("mixed line breaks. can't parse file");
+	}
+}
+
 
 // ============
-
 
 // return new string with the removed rem from the source
 std::string translate(std::string source, char rem)

@@ -161,6 +161,20 @@ public:
 	unsigned        getLinesNum()      const;
 
 	/**
+	* Get the line break character in the file
+	*
+	* @return total number of observations
+	*/
+	char           getLineBreak()      const;
+
+	/**
+	* Get the line break type
+	*
+	* @return a string stating what is the type of line break
+	*/
+	std::string    getLineBreakDetailed()      const;
+
+	/**
 	* Check if the file is in good state or not
 	*
 	* @return true if it's good, false otherwise
@@ -239,7 +253,12 @@ private:
 	// setup the rest lines
 	Observation*    _Initinfo();
 
+	// the appropriate line break
+	char        _Linebreak();
+
 	std::fstream        _CSV;         // fstream of the file
+	char                _Break;       // line break
+	std::string         _Breakstring; // line break detailed
 	int                 _Totallines;  // total lines in the file (including meta)
 	int                 _Lines;       // total lines in the file (excluding meta)
 	std::string         _Fname;       // file name

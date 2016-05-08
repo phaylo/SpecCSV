@@ -246,3 +246,4 @@ ModelManifest.xml
 /SpecCSV/trans.csv
 /SpecCSV/money.csv
 /SpecCSV/csv
+*.cd

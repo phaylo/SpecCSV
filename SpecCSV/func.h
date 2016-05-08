@@ -49,6 +49,12 @@ void displayUsage();
  */
 void openFile();
 
+/**
+ * Display the line break type used in the file
+ * (processed info are from csvfile, meta and args global variables
+ */
+void displayLineEnd();
+
 // display info
 
 /**
@@ -156,3 +162,24 @@ void insertDetailed();
  * (processed info are from csvfile, meta and args global variables
  */
 void calcSum();
+
+/**
+ * Display the mean of a specific field from all observations
+ * which field is known via the given value name
+ * (processed info are from csvfile, meta and args global variables
+ */
+ void calcMean();
+ 
+/**
+ * Display the min of a specific field from all observations
+ * which field is known via the given value name
+ * (processed info are from csvfile, meta and args global variables
+ */
+ void calcMin();
+ 
+/**
+ * Display the max of a specific field from all observations
+ * which field is known via the given value name
+ * (processed info are from csvfile, meta and args global variables
+ */
+ void calcMax();

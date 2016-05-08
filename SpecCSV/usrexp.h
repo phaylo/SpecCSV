@@ -37,3 +37,10 @@ class ArgumentException : public std::runtime_error
 public:
 	ArgumentException(std::string msg) : runtime_error(msg) {}
 };
+
+// thrown when a file (in text mode) or string can't be parsed for some reason
+class ParseException : public std::runtime_error
+{
+public:
+	ParseException(std::string msg) : runtime_error(msg) {}
+};
