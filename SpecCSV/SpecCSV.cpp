@@ -8,9 +8,12 @@
 
 #include "stdafx.h"
 
-using namespace boost::algorithm;
 
-// global
+//////////////////////////////////////////////////
+// Global
+//////////////////////////////////////////////////
+
+
 Frame csvfile;      // CSV file
 Observation meta;   // meta info
 string_vec args;    // command args
@@ -18,10 +21,21 @@ string_vec args;    // command args
 int main(void)
 {
 
-	/* initialize the program */
+	//////////////////////////////////////////////////
+	// Initialization
+	//////////////////////////////////////////////////
+
+	// a note about files concerns line breaks
+	std::cout << "\nDepending on where you run this program...\nAppending or deleting the last observation ";
+	std::cout << "might result in multiple line endings which can prevent other programs including SpecCSV ";
+	std::cout << "to handle the file correctly\n";
+
+	std::cout << "\nWe recommend using any other edit feature of SpecCSV to convert all line endings to ";
+	std::cout << "one type.\nIf you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
+	std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n";
 
 	// 1. input file name
-	name:
+	name:  // I know... 
 		std::string filename;
 		std::cout << "Please input the appropriate filename\n";
 
@@ -29,34 +43,33 @@ int main(void)
 
 	if (filename == "debug")
 	{
-		// for lol
-		std::cout << "Delete System32 then try again...\n";
+		// clean up
 	}
+
 	else
 	{
-		/* open the appropriate file */
+
+		//////////////////////////////////////////////////
+		// Open the appropriate file
+		//////////////////////////////////////////////////
 
 		try
 		{
+			// open the file and set up the meta info
+
 			csvfile.open(filename);
 			meta = csvfile.getMeta();
 		}
 		catch(const ParseException& err)
 		{
+			// could not parse file. ask again for a filename
 			std::cout << err.what() << std::endl;
-			goto name;
+			goto name;  // dude...
 		}
 
-		/* program usage and actions */
-
-		// a note about files concerns line breaks
-		std::cout << "\nDepending on where you run this program...\nAppending or deleting the last observation ";
-		std::cout << "might result in multiple line endings which can prevent other programs including SpecCSV ";
-		std::cout << "to handle the file correctly\n";
-
-		std::cout << "\nWe recommend using any other edit feature of SpecCSV to convert all line endings to ";
-		std::cout << "one type.\nIf you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
-		std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n";
+		//////////////////////////////////////////////////
+		// Usage and commands handling
+		//////////////////////////////////////////////////
 
 		// 2. display usage
 		displayUsage();
@@ -67,13 +80,15 @@ int main(void)
 		
 		do
 		{
-			std::cout << ">> ";
-			std::getline(std::cin, _cmd);			
+			// ask for the command
+			std::cout << ">> ";            // gives "terminal like" feeling
+			std::getline(std::cin, _cmd);
 
-			args = parseCmd(_cmd);
-			cmd = hashCmd(args[0]);
+			args = parseCmd(_cmd);         // get the command args
+			cmd = hashCmd(args[0]);        // hash the first arg to determine the actual command
 
-			try {
+			try
+			{
 				switch (cmd)
 				{
 
@@ -227,12 +242,13 @@ int main(void)
 			catch (const ParseException& err)
 			{
 				std::cout << "fatal error: " << err.what() << std::endl;
-				std::cout << "please specify another file: " << std::endl;
-				goto name;
+				std::cout << "please specify another file" << std::endl;
+				goto name;  // damnit man
 			}
 
 			catch (std::exception)
 			{
+				// reached this point... not a known exception. throw it				
 				std::cout << "unhandled exception" << std::endl;
 				throw;
 			}
@@ -246,7 +262,23 @@ int main(void)
 	return 0;
 }
 
+
+//////////////////////////////////////////////////
+// Definitions
+//////////////////////////////////////////////////
+
+
 // misc
+void trim(std::string& str)
+{
+	// trim leading spaces
+	for (std::string::iterator it = str.begin(); *it == ' ';)
+		str.erase(it);
+
+	// trim trailing spaces
+	for (std::string::iterator it_end = str.end() - 1; *it_end == ' '; it_end--)
+		str.pop_back();
+}
 int hashCmd(const std::string& command)
 {
 	if (command == "quit")
@@ -443,7 +475,7 @@ inline void showMeta()
 
 	for (int i = 0, len = meta.getNumValues(); i < len; i++)
 	{
-		std::cout << meta[i] << std::endl;
+		std::cout << meta.at(i) << std::endl;
 	}
 }
 inline void showInfo()
@@ -485,8 +517,8 @@ void showDetailed()
 	{
 		std::cout.width(meta.getLongest().length() + PADDING);
 
-		std::cout << std::left << meta[i] << std::left << ": ";
-		std::cout << std::right << csvfile.getInfo()[linenum - 1][i] << std::endl;
+		std::cout << std::left << meta.at(i) << std::left << ": ";
+		std::cout << std::right << csvfile.getInfo()[linenum - 1].at(i) << std::endl;
 	}
 }
 
@@ -527,7 +559,7 @@ void appDetailed()
 
 	for (int i = 0, len = meta.getNumValues(); i < len; i++)
 	{
-		std::cout << meta[i] << ": ";
+		std::cout << meta.at(i) << ": ";
 		std::getline(std::cin, obs);
 
 		if (i != len - 1)
@@ -654,7 +686,7 @@ void editDetailed()
 	// get the edited info
 	for (int i = 0, len = meta.getNumValues(); i < len; i++)
 	{
-		std::cout << meta[i] << ": (" << target[i] << ") ";
+		std::cout << meta.at(i) << ": (" << target.at(i) << ") ";
 		std::getline(std::cin, obs);
 
 		if (i != len - 1)
@@ -711,7 +743,7 @@ void editField()
 
 	// get edit info
 	edited = csvfile.getInfo()[linenum - 1];
-	std::cout << meta[field] << ": (" << edited[field] << ") ";
+	std::cout << meta.at(field) << ": (" << edited.at(field) << ") ";
 
 	std::getline(std::cin, editField);
 	edited.alter(field, editField);
@@ -791,7 +823,7 @@ void insertDetailed()
 
 	for (int i = 0, len = meta.getNumValues(); i < len; i++)
 	{
-		std::cout << meta[i] << ": ";
+		std::cout << meta.at(i) << ": ";
 		std::getline(std::cin, obs);
 
 		if (i != len - 1)
@@ -826,7 +858,7 @@ void calcSum()
 	{
 		try
 		{
-			sum += std::stof(csvfile.getInfo()[i][val]);
+			sum += std::stof(csvfile.getInfo()[i].at(val));
 		}
 		catch (std::invalid_argument)
 		{
@@ -852,7 +884,7 @@ void calcMean()
 	{
 		try
 		{
-			sum += std::stof(csvfile.getInfo()[i][val]);
+			sum += std::stof(csvfile.getInfo()[i].at(val));
 		}
 		catch (std::invalid_argument)
 		{
@@ -878,7 +910,7 @@ void calcMin()
 	{
 		try
 		{
-			double temp = std::stof(csvfile.getInfo()[i][val]);
+			double temp = std::stof(csvfile.getInfo()[i].at(val));
 			
 			if (i == 0)
 			{
@@ -912,7 +944,7 @@ void calcMax()
 	{
 		try
 		{
-			double temp = std::stof(csvfile.getInfo()[i][val]);
+			double temp = std::stof(csvfile.getInfo()[i].at(val));
 
 			if (i == 0)
 			{

@@ -10,9 +10,26 @@
 
 #include "stdafx.h"
 
- /* prototypes */
+#define PADDING 2       // used to align text gently (for showdetailed command)
+#define SHOWLIMIT 50    // the upper limit of max observations to show freely (for showinfo command)
+#define SHOWLASTNUM 10  // number of observations to show if a Frame has many (for showinfo command)
+
+typedef std::vector<std::string> string_vec;
+
+
+//////////////////////////////////////////////////
+// Prototypes
+//////////////////////////////////////////////////
+
 
  // misc
+
+/**
+ * Trim leading and trailing spaces from string
+ *
+ * @param the string to be trimmed
+ */
+void trim(std::string& str);
 
 /**
  * Return an integer to check which command is being used

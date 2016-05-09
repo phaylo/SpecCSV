@@ -8,19 +8,30 @@
 
 #include "stdafx.h"
 
-/*** Observation class members ***/
 
-/** public **/
+ //////////////////////////////////////////////////
+ // Observation class members
+ //////////////////////////////////////////////////
 
-// constructors
+
+/* Public */
+
+
+//////////////////////////////////////////////////
+// Constructor
+//////////////////////////////////////////////////
+
 Observation::Observation(std::string line)
 {
 	_Init = translate(line, '"');  // the raw line in the file
-	_Numvals = _Nums();               // number of values
+	_Numvals = _Nums();            // number of values
 	_Vals = _Split();              // vector of values (as std::string)
 }
 
-// accessors
+//////////////////////////////////////////////////
+// Accessors
+//////////////////////////////////////////////////
+
 unsigned    Observation::getNumValues()  const
 {
 	return _Numvals;
@@ -30,7 +41,10 @@ std::string Observation::getRaw()        const
 	return _Init;
 }
 
-// find functionality
+//////////////////////////////////////////////////
+// Find functionality
+//////////////////////////////////////////////////
+
 int         Observation::find(const std::string& value) const
 {
 	int result = 0;
@@ -93,9 +107,15 @@ std::string Observation::getLongest()                   const
 	return _Vals[result];
 }
 
-// observation edit functionality
+//////////////////////////////////////////////////
+// Observation edit functionality
+//////////////////////////////////////////////////
+
 void        Observation::alter(size_t index, std::string edit)
 {
+	if (index >= _Vals.size())
+		throw std::out_of_range("nof field exist with such index");
+
 	std::string temp;
 
 	// mindf*ck!
@@ -158,14 +178,19 @@ void        Observation::alter(size_t index, std::string edit)
 	_Vals = _Split();
 }
 
-// overloaded [] operator (indexer)
-std::string Observation::operator[](size_t index)  const
+//////////////////////////////////////////////////
+// Indexer
+//////////////////////////////////////////////////
+
+std::string Observation::at(size_t index)  const
 {
 	// don't touch this for now
 	return _Vals.at(index);
 }
 
-/** private **/
+
+/* Private */
+
 
 // calculate number of fields
 unsigned    Observation::_Nums()
@@ -218,14 +243,18 @@ string_vec  Observation::_Split()
 }
 
 
-// ============
+//////////////////////////////////////////////////
+// Frame class members
+//////////////////////////////////////////////////
 
 
-/*** Frame class members ***/
+/* Public */
 
-/** public **/
 
-// constructor and destructor
+//////////////////////////////////////////////////
+// Constructor and destructor
+//////////////////////////////////////////////////
+
 Frame::Frame(std::string filename)
 {
 	// open the file for reading and writing, and set the out pointer at the end of file 
@@ -245,32 +274,35 @@ Frame::~Frame()
 	_CSV.close();
 }
 
-// accessors
-Observation  Frame::getMeta()             const
+//////////////////////////////////////////////////
+// Accessors
+//////////////////////////////////////////////////
+
+Observation  Frame::getMeta()              const
 {
 	return _Meta;
 }
-Observation* Frame::getInfo()             const
+Observation* Frame::getInfo()              const
 {
 	return _Info;
 }
-unsigned     Frame::getTotalLinesNum()    const
+unsigned     Frame::getTotalLinesNum()     const
 {
 	return _Totallines;
 }
-unsigned     Frame::getLinesNum()         const
+unsigned     Frame::getLinesNum()          const
 {
 	return _Lines;
 }
-char         Frame::getLineBreak()        const
+char         Frame::getLineBreak()         const
 {
 	return _Break;
 }
-std::string Frame::getLineBreakDetailed() const
+std::string  Frame::getLineBreakDetailed() const
 {
 	return _Breakstring;
 }
-bool         Frame::fileGood()            const
+bool         Frame::fileGood()             const
 {
 	if (_CSV.good())
 		return true;
@@ -278,7 +310,10 @@ bool         Frame::fileGood()            const
 		return false;
 }
 
-// refresh and open files
+//////////////////////////////////////////////////
+// Refresh and open files
+//////////////////////////////////////////////////
+
 void Frame::refresh()
 {
 	_CSV.close();
@@ -316,7 +351,10 @@ void Frame::open(const std::string& fname)
 	_Info = _Initinfo();
 }
 
-// append functionality
+//////////////////////////////////////////////////
+// Append functionality
+//////////////////////////////////////////////////
+
 void Frame::writeInline(const std::string& obs)
 {
 	//_CSV.close();
@@ -324,7 +362,10 @@ void Frame::writeInline(const std::string& obs)
 	_CSV << obs << '\n';
 }
 
-// delete functionality
+//////////////////////////////////////////////////
+// Delete functionality
+//////////////////////////////////////////////////
+
 void Frame::deleteLine()
 {
 	_CSV.close();
@@ -341,6 +382,9 @@ void Frame::deleteLine()
 }
 void Frame::deleteLine(size_t line)
 {
+	if (line >= _Lines)
+		throw std::out_of_range("line doesn't exist");
+
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
@@ -357,7 +401,10 @@ void Frame::deleteLine(size_t line)
 	_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
 }
 
-// edit functionality
+//////////////////////////////////////////////////
+// Edit functionality
+//////////////////////////////////////////////////
+
 void Frame::editLine(const Observation& edited)
 {
 	_CSV.close();
@@ -377,6 +424,9 @@ void Frame::editLine(const Observation& edited)
 }
 void Frame::editLine(size_t line, const Observation& edited)
 {
+	if (line >= _Lines)
+		throw std::out_of_range("line doesn't exist");
+
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
@@ -396,9 +446,15 @@ void Frame::editLine(size_t line, const Observation& edited)
 	_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
 }
 
-// insert functionality
+//////////////////////////////////////////////////
+// Insert functionality
+//////////////////////////////////////////////////
+
 void Frame::insertLine(size_t line, const Observation& obs)
 {
+	if (line >= _Lines)
+		throw std::out_of_range("line doesn't exist");
+
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
@@ -416,7 +472,9 @@ void Frame::insertLine(size_t line, const Observation& obs)
 	_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
 }
 
-/** private **/
+
+/* Private */
+
 
 // number of lines in the file
 unsigned        Frame::_Linenum()
@@ -516,9 +574,11 @@ char            Frame::_Linebreak()
 }
 
 
-// ============
+//////////////////////////////////////////////////
+// Helper function
+//////////////////////////////////////////////////
 
-// return new string with the removed rem from the source
+
 std::string translate(std::string source, char rem)
 {
 	std::string result = "";

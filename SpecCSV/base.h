@@ -10,7 +10,17 @@
 
 #include "stdafx.h"
 
-/* prototypes */
+#define NEG -1                // "not found" for find functionallity in Observation class
+#define LINE_FEED '\n'        // for use in Frame class
+#define CARRIAGE_RETURN '\r'  // for use in Frame class
+
+typedef std::vector<std::string> string_vec;
+
+
+//////////////////////////////////////////////////
+// Prototypes
+//////////////////////////////////////////////////
+
 
 /**
  * Return a string with a removed chars from it
@@ -22,15 +32,20 @@
 std::string translate(std::string source, char rem);
 
 
-// ============
+//////////////////////////////////////////////////
+// Observation class
+//////////////////////////////////////////////////
 
 
-/* Observation class */
 class Observation
 {
 public:
 
-	// constructors
+
+	//////////////////////////////////////////////////
+	// Constructor
+	//////////////////////////////////////////////////
+
 
 	/**
 	 * Construct an Observation object
@@ -40,7 +55,11 @@ public:
 	Observation(std::string line);
 	Observation() = default;
 
-	// accessors
+
+	//////////////////////////////////////////////////
+	// Accessors
+	//////////////////////////////////////////////////
+
 
 	/**
 	 * Get the number of fields in an observation
@@ -56,7 +75,11 @@ public:
 	*/
 	std::string getRaw()                       const;
 
-	// find functionality
+
+	//////////////////////////////////////////////////
+	// Find functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Return the index of a filed given its string
@@ -80,7 +103,11 @@ public:
 	*/
 	std::string getLongest()                   const;
 
-	// observation edit functionality
+
+	//////////////////////////////////////////////////
+	// Observation edit functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Edit the observation given a specific index and a new string
@@ -90,14 +117,19 @@ public:
 	*/
 	void        alter(size_t index, std::string edit);
 
-	// overloaded [] operator (indexer)
+
+	//////////////////////////////////////////////////
+	// Indexer
+	//////////////////////////////////////////////////
+
+
 	/**
 	* Get a field string given its index
 	*
 	* @param index the index of the filed
 	* @return the field at the specific index
 	*/
-	std::string operator[](size_t index)  const;
+	std::string at(size_t index)  const;
 
 private:
 
@@ -113,14 +145,20 @@ private:
 };
 
 
-// ============
+//////////////////////////////////////////////////
+// Frame class
+//////////////////////////////////////////////////
 
 
-/* Frame class */
 class Frame
 {
 public:
-	// constructors and destructor
+
+
+	//////////////////////////////////////////////////
+	// Constructor and destructor
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Construct a Frame object
@@ -131,7 +169,12 @@ public:
 	Frame() = default;
 	~Frame();
 
-	// accessors
+
+	//////////////////////////////////////////////////
+	// Accessors
+	//////////////////////////////////////////////////
+
+
 	/**
 	* Get the meta info of the Frame (first line)
 	*
@@ -181,7 +224,9 @@ public:
 	*/
 	bool            fileGood()         const;
 
-	// refresh and open files
+	//////////////////////////////////////////////////
+	// Refresh and open files
+	//////////////////////////////////////////////////
 
 	/**
 	* Reopen the current file and refresh all of the Frame info
@@ -202,7 +247,11 @@ public:
 	*/
 	void open(const std::string& fname);
 
-	// append functionality
+	
+	//////////////////////////////////////////////////
+	// Append functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Write a raw string to the file
@@ -211,7 +260,11 @@ public:
 	*/
 	void writeInline(const std::string& obs);
 
-	// delete functionality
+	
+	//////////////////////////////////////////////////
+	// Delete functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Delete a line (observation) from the file (doesn't refresh Frame info)
@@ -221,7 +274,11 @@ public:
 	void deleteLine();
 	void deleteLine(size_t line);
 
-	// edit functionality
+	
+	//////////////////////////////////////////////////
+	// Edit functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* Edit a line (observation) from the file (doesn't refresh Frame info)
@@ -232,7 +289,11 @@ public:
 	void editLine(const Observation& edited);
 	void editLine(size_t line, const Observation& edited);
 
-	// insert functionality
+	
+	//////////////////////////////////////////////////
+	// Insert functionality
+	//////////////////////////////////////////////////
+
 
 	/**
 	* insert a line (observation) from the file (doesn't refresh Frame info)
