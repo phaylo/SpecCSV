@@ -10,8 +10,8 @@
 
 #include "stdafx.h"
 
-#define NEG -1                // "not found" for find functionallity in Observation class
-#define LINE_FEED '\n'        // for use in Frame class
+#define NEG             -1    // "not found" for find functionallity in Observation class
+#define LINE_FEED       '\n'  // for use in Frame class
 #define CARRIAGE_RETURN '\r'  // for use in Frame class
 
 typedef std::vector<std::string> string_vec;

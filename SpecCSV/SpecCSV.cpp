@@ -32,7 +32,7 @@ int main(void)
 
 	std::cout << "\nWe recommend using any other edit feature of SpecCSV to convert all line endings to ";
 	std::cout << "one type.\nIf you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
-	std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n";
+	std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n\n";
 
 	// 1. input file name
 	name:  // I know... 
@@ -468,7 +468,7 @@ void displayLineEnd()
 
 
 // display info
-inline void showMeta()
+void showMeta()
 {
 	if (args.size() != 1)
 		throw ArgumentException("usage: showmeta");
@@ -478,13 +478,16 @@ inline void showMeta()
 		std::cout << meta.at(i) << std::endl;
 	}
 }
-inline void showInfo()
+void showInfo()
 {
 	if (args.size() != 1)
 		throw ArgumentException("usage: showinfo");
 
 	// don't display everything if there's many observations
 	int i = csvfile.getLinesNum() > SHOWLIMIT ? csvfile.getLinesNum() - SHOWLASTNUM : 0;
+
+	if (i > 0)
+		std::cout << ".\n.\n.\n";
 
 	for (int len = csvfile.getLinesNum(); i < len; i++)
 		std::cout << "[" << i + 1 << "] " << csvfile.getInfo()[i].getRaw() << std::endl;

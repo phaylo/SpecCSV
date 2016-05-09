@@ -549,21 +549,21 @@ char            Frame::_Linebreak()
 	if (countCR == countLF)
 	{
 		_Breakstring = "CRLF, Windows";
-		return '\n';
+		return LINE_FEED;
 	}
 
 	// or all line breaks are LF (unix)
 	else if (countCR == 0 && countLF != 0)
 	{
 		_Breakstring = "LF, Unix";
-		return '\n';
+		return LINE_FEED;
 	}
 
 	// all line breaks ar CR (Mac old)
 	else if (countLF == 0 && countCR != 0)
 	{
 		_Breakstring = "CR, Mac (old)";
-		return '\r';
+		return CARRIAGE_RETURN;
 	}
 
 	// mixed

@@ -10,8 +10,8 @@
 
 #include "stdafx.h"
 
-#define PADDING 2       // used to align text gently (for showdetailed command)
-#define SHOWLIMIT 50    // the upper limit of max observations to show freely (for showinfo command)
+#define PADDING      2  // used to align text gently (for showdetailed command)
+#define SHOWLIMIT   50  // the upper limit of max observations to show freely (for showinfo command)
 #define SHOWLASTNUM 10  // number of observations to show if a Frame has many (for showinfo command)
 
 typedef std::vector<std::string> string_vec;
@@ -79,13 +79,13 @@ void displayLineEnd();
  * (processed info are from csvfile, meta and args global variables
  */
 
-inline void showMeta();
+void showMeta();
 
 /**
  * Display all lines of the file (excluding meta)
  * (processed info are from csvfile, meta and args global variables
  */
-inline void showInfo();
+void showInfo();
 
 /**
  * Disaply a detailed info about  a specific observation
