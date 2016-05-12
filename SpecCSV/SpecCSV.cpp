@@ -26,13 +26,15 @@ int main(void)
 	//////////////////////////////////////////////////
 
 	// a note about files concerns line breaks
-	std::cout << "\nDepending on where you run this program...\nAppending or deleting the last observation ";
-	std::cout << "might result in multiple line endings which can prevent other programs including SpecCSV ";
-	std::cout << "to handle the file correctly\n";
+	std::cout << "\n  Depending on where you run this program,\n";
+	std::cout << "  Appending or deleting the last observation\n";
+	std::cout << "  might result in multiple line endings which can prevent\n";
+	std::cout << "  other programs including SpecCSV to handle the file correctly.\n\n";
 
-	std::cout << "\nWe recommend using any other edit feature of SpecCSV to convert all line endings to ";
-	std::cout << "one type.\nIf you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
-	std::cout << "You can type 'linebreak' to see what kind of line endings the current file has\n\n";
+	std::cout << "  We recommend using any other edit feature of\n";
+	std::cout << "  SpecCSV to convert all line endings to one type.\n";
+	std::cout << "  If you just want to try SpecCSV, we recommend testing it on the available demo files.\n";
+	std::cout << "  You can type 'linebreak' to see what kind of line endings the current file has\n\n";
 
 	// 1. input file name
 	name:  // I know... 
@@ -43,6 +45,19 @@ int main(void)
 
 	if (filename == "debug")
 	{
+		std::string l = "Hello\n";
+		
+
+		for (char c : l)
+		{
+			if (c == '\n')
+				std::cout << "LF" << std::endl;
+			else if (c == '\r')
+				std::cout << "CR" << std::endl;
+		}
+
+
+		std::cin >> filename;
 		// clean up
 	}
 
@@ -271,6 +286,18 @@ int main(void)
 // misc
 void trim(std::string& str)
 {
+	// protect from empty string (or string with spaces only)
+
+	bool only_space = false;
+
+	for (std::string::iterator it = str.begin(); it != str.end(); it++)
+		if (*it != ' ')
+			only_space = true;
+
+	if (!only_space)
+		return;
+
+
 	// trim leading spaces
 	for (std::string::iterator it = str.begin(); *it == ' ';)
 		str.erase(it);

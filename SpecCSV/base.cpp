@@ -359,7 +359,7 @@ void Frame::writeInline(const std::string& obs)
 {
 	//_CSV.close();
 	//_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
-	_CSV << obs << '\n';
+	_CSV << obs << _Break;
 }
 
 //////////////////////////////////////////////////
@@ -371,10 +371,10 @@ void Frame::deleteLine()
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
-	_CSV << _Meta.getRaw() << "\n";
+	_CSV << _Meta.getRaw() << _Break;
 	for (int i = 0; i < _Lines - 1; i++)
 	{
-		_CSV << _Info[i].getRaw() << "\n";
+		_CSV << _Info[i].getRaw() << _Break;
 	}
 
 	_CSV.close();
@@ -388,13 +388,13 @@ void Frame::deleteLine(size_t line)
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
-	_CSV << _Meta.getRaw() << "\n";
+	_CSV << _Meta.getRaw() << _Break;
 	for (int i = 0; i < _Lines; i++)
 	{
 		if (i == line)
 			continue;
 
-		_CSV << _Info[i].getRaw() << "\n";
+		_CSV << _Info[i].getRaw() << _Break;
 	}
 
 	_CSV.close();
@@ -410,14 +410,14 @@ void Frame::editLine(const Observation& edited)
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
-	_CSV << _Meta.getRaw() << "\n";
+	_CSV << _Meta.getRaw() << _Break;
 	for (int i = 0; i < _Lines - 1; i++)
 	{
-		_CSV << _Info[i].getRaw() << "\n";
+		_CSV << _Info[i].getRaw() << _Break;
 	}
 
 	// write the edited line into the file
-	_CSV << edited.getRaw() << "\n";
+	_CSV << edited.getRaw() << _Break;
 
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::in | std::ios::out | std::ios::app);
@@ -430,16 +430,16 @@ void Frame::editLine(size_t line, const Observation& edited)
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
-	_CSV << _Meta.getRaw() << "\n";
+	_CSV << _Meta.getRaw() << _Break;
 	for (int i = 0; i < _Lines; i++)
 	{
 		if (i == line)
 		{
-			_CSV << edited.getRaw() << "\n";
+			_CSV << edited.getRaw() << _Break;
 			continue;
 		}
 
-		_CSV << _Info[i].getRaw() << "\n";
+		_CSV << _Info[i].getRaw() << _Break;
 	}
 
 	_CSV.close();
@@ -458,14 +458,14 @@ void Frame::insertLine(size_t line, const Observation& obs)
 	_CSV.close();
 	_CSV.open(_Fname, std::ios::out);
 
-	_CSV << _Meta.getRaw() << "\n";
+	_CSV << _Meta.getRaw() << _Break;
 	for (int i = 0; i < _Lines; i++)
 	{
 		// insert the new line
 		if (i == line)
-			_CSV << obs.getRaw() << "\n";
+			_CSV << obs.getRaw() << _Break;
 
-		_CSV << _Info[i].getRaw() << "\n";
+		_CSV << _Info[i].getRaw() << _Break;
 	}
 
 	_CSV.close();
