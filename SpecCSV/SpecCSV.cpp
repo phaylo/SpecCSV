@@ -45,19 +45,6 @@ int main(void)
 
 	if (filename == "debug")
 	{
-		std::string l = "Hello\n";
-		
-
-		for (char c : l)
-		{
-			if (c == '\n')
-				std::cout << "LF" << std::endl;
-			else if (c == '\r')
-				std::cout << "CR" << std::endl;
-		}
-
-
-		std::cin >> filename;
 		// clean up
 	}
 
@@ -71,7 +58,6 @@ int main(void)
 		try
 		{
 			// open the file and set up the meta info
-
 			csvfile.open(filename);
 			meta = csvfile.getMeta();
 		}
@@ -258,10 +244,10 @@ int main(void)
 			{
 				std::cout << "fatal error: " << err.what() << std::endl;
 				std::cout << "please specify another file" << std::endl;
-				goto name;  // damnit man
+				goto name;
 			}
 
-			catch (std::exception)
+			catch (std::exception&)
 			{
 				// reached this point... not a known exception. throw it				
 				std::cout << "unhandled exception" << std::endl;
@@ -292,7 +278,10 @@ void trim(std::string& str)
 
 	for (std::string::iterator it = str.begin(); it != str.end(); it++)
 		if (*it != ' ')
+		{
 			only_space = true;
+			break;
+		}
 
 	if (!only_space)
 		return;
@@ -415,10 +404,6 @@ string_vec parseCmd(std::string command)
 			result.push_back(temp);
 			temp = "";
 		}
-		else if (*it == ' ' && temp == "")
-		{
-			continue;
-		}
 	}
 
 	// for the last arg
@@ -535,7 +520,7 @@ void showDetailed()
 		else
 			linenum = std::stoi(args[1]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -624,7 +609,7 @@ void deleteLine()
 		else
 			linenum = std::stoi(args[1]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -664,7 +649,7 @@ void editInline()
 		else
 			linenum = std::stoi(args[2]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -703,7 +688,7 @@ void editDetailed()
 		else
 			linenum = std::stoi(args[2]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -759,7 +744,7 @@ void editField()
 		else
 			linenum = std::stoi(args[1]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -811,7 +796,7 @@ void insertInline()
 		else
 			linenum = std::stoi(args[2]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -843,7 +828,7 @@ void insertDetailed()
 		else
 			linenum = std::stoi(args[2]);
 	}
-	catch (std::invalid_argument)
+	catch (std::invalid_argument&)
 	{
 		throw ArgumentException("linenumber must be an integer");
 	}
@@ -890,7 +875,7 @@ void calcSum()
 		{
 			sum += std::stof(csvfile.getInfo()[i].at(val));
 		}
-		catch (std::invalid_argument)
+		catch (std::invalid_argument&)
 		{
 			throw BehaviourException("one or more field is not a number");
 		}
@@ -916,7 +901,7 @@ void calcMean()
 		{
 			sum += std::stof(csvfile.getInfo()[i].at(val));
 		}
-		catch (std::invalid_argument)
+		catch (std::invalid_argument&)
 		{
 			throw BehaviourException("one or more field is not a number");
 		}
@@ -950,7 +935,7 @@ void calcMin()
 
 			min = min < temp ? min : temp;
 		}
-		catch (std::invalid_argument)
+		catch (std::invalid_argument&)
 		{
 			throw BehaviourException("one or more field is not a number");
 		}
@@ -984,7 +969,7 @@ void calcMax()
 
 			max = max > temp ? max : temp;
 		}
-		catch (std::invalid_argument)
+		catch (std::invalid_argument&)
 		{
 			throw BehaviourException("one or more field is not a number");
 		}
