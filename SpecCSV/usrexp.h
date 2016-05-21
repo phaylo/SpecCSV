@@ -24,14 +24,14 @@ public:
 	DeprecatedException(std::string msg = "deprecated, please avoid using") : logic_error(msg) {}
 };
 
-// thrown when a function face something unexpeceted that might result in an wanted result
+// thrown when a function faces something unexpeceted that may results in an unwanted result
 class BehaviourException : public std::runtime_error
 {
 public:
 	BehaviourException(std::string msg) : runtime_error(msg) {}
 };
 
-// thrown if a command given invalid argumnts (the in-app command)
+// thrown if a command had given invalid argumnts (the in-app command)
 class ArgumentException : public std::runtime_error
 {
 public:
